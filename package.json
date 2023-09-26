@@ -1,0 +1,32 @@
+{
+  "name": "node-red-teknoir-push-notifications",
+  "version": "0.0.1",
+  "description": "A set of nodes to send push-notification from Teknoir Platform",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teknoir/node-red-teknoir-push-notifications.git"
+  },
+  "keywords": [
+    "node-red",
+    "teknoir",
+    "nodered",
+    "notifications",
+    "push-notifications"
+  ],
+  "node-red": {
+    "nodes": {
+      "teknoir-push-notification": "src/notifications.js"
+    }
+  },
+  "author": "Anders Åslund <anders.aslund@teknoir.ai>",
+  "bugs": {
+    "url": "https://teknoir.ai"
+  },
+  "homepage": "https://teknoir.ai",
+  "dependencies": {
+    "node-fetch": "2.6.0"
+  }
+}

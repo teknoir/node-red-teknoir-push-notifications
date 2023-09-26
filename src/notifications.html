@@ -1,0 +1,134 @@
+<style>
+
+table{
+  width: 100%;
+} 
+
+th, td {
+  padding:.25em .5em;
+  text-align:left;
+  &:nth-child(2) {
+    text-align:right;
+  }
+}
+td {
+  background-color:rgb(86, 85, 85);    
+}
+th {
+  background-color:rgb(168, 168, 168);
+  color:#fff;
+}
+
+</style>
+<script type="text/javascript">
+  RED.nodes.registerType("teknoir-push-notification", {
+    category: "notifications",
+    color: "#c28285",
+    defaults: {
+      name: { value: "Send notification" },
+      notifTitle: { value: undefined, required: true  },
+      notifBody: { value: undefined, required: true  },
+      orgEmails: { value: [], required: true },
+      recepients: { value: [], required: true },
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: "tn_dark.svg",
+    inputLabels: function (index) {
+      return "json ";
+    },
+    oneditsave: function() {
+          const allChecked = $('input[name="notification-status"]:checked')
+          console.log(allChecked)
+          const emails = allChecked.get().map(x => x.getAttribute('email'))
+          this.recepients = emails;
+
+    },
+    oneditprepare: function () {
+      var node = this;
+      $.getJSON("notifications/organisation-emails", function (emails) {
+        node.orgEmails = emails.sort();
+        const recepients = emails.map(email => ({ 
+          email, 
+          enable: node.recepients.includes(email)})
+        )
+        recepients.forEach((recepient) => {
+          const checkbox = $('<input/>',{'type':'checkbox'})
+              .attr('checked', recepient.enable)
+              .attr('email', recepient.email)
+              .attr('name', 'notification-status')
+          const tr = $('<tr>').append(
+            $('<td>').text(recepient.email),
+            $('<td>').append(checkbox)
+          ) ;
+          $("#table-container").append(tr);
+        });
+      });
+    },
+    label: function () {
+      return this.name || "notification";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="teknoir-push-notification">
+  <h4>Settings</h4>
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i>name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-notificationType"><i class="icon-tag"></i>type</label>
+    <select id="node-input-notificationType">
+        <option value="webpush">WebPush</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-notifTitle"><i class="icon-tag"></i>title</label>
+    <input type="text" id="node-input-notifTitle" placeholder="Notification Title">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-notifBody"><i class="icon-tag"></i>body</label>
+    <input type="text" id="node-input-notifBody" placeholder="Notification Body">
+  </div>
+
+  <div>
+    <table id="table-container">
+      <tr>
+        <th>email</th>
+        <th>enable</th>
+      </tr>
+    </table>
+  </div>
+</div>
+</script>
+
+<script type="text/html" data-help-name="teknoir-push-notification">
+
+  <h3>Notification</h3>
+  <p><strong>This node is sending notifications via teknoir platform</strong><br /></p>
+  <p>All inputs are either configured inside node, or overrided by the input from connected node
+  </p>
+  
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+      <dt>msg.payload.title
+          <span class="property-type">string</span>
+      </dt>
+      <dd>Title of nofitication.</dd>
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+      <dt>msg.payload.body
+          <span class="property-type">string</span>
+      </dt>
+      <dd>The body of notification</dd>
+      <dt>msg.payload.emails
+          <span class="property-type">array of strings</span>
+      </dt>
+      <dd>The emails of users who are recepients.</dd>
+  </dl>
+
+</script>
